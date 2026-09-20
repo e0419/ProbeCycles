@@ -1,0 +1,92 @@
+%
+<Brians_GO_PROBE>(Brian's Go Probe)
+(MACHINE)
+(  VENDOR TAKUMI)
+(  DESCRIPTION TAKUMI H12E)
+ 
+ 
+(Z Top Of Part)
+ 
+G65P9901M1.A-3.S54.
+ 
+G65P9901M1.A-3.S55.
+ 
+G65P9901M1.A-3.S56.
+ 
+(Z Top of 123 Block With Z at Bottom of Block) 
+ 
+G65P9901M1.A-3.K-4.376S54. 
+ 
+(WEB)(D = Length "X" / Width Of Stock "Y" / W = Depth Of Probe)
+ 
+(X Axis) 
+G65P9901M5.A1.D33.5W-.75S54. 
+ 
+ 
+ 
+(Y Axis) 
+G65P9901M5.A2.D32.5W-.75S54. 
+ 
+(Pocket)(D = Width / Length) 
+ 
+(X Axis) 
+G65P9901M4.A1.D8.25S54.
+ 
+(Y Axis) 
+G65P9901M4.A2.D32.3S54.
+ 
+ 
+(Single Point Probing) 
+ 
+(Y-) 
+G65P9901M1.A-2.S54.
+ 
+(Y+) 
+G65P9901M1.A2.S54. 
+ 
+(X-) 
+G65P9901M1.A-1.S54.
+ 
+(X+) 
+G65P9901M1.A1.S54. 
+ 
+ 
+(Bore)( D = Diameter Of Bore)
+ 
+G65P9901M2.D0.95S54
+ 
+ 
+ 
+(Boss / Round) 
+(D = Diametter of Boss)
+ 
+G65P9901M3.D1.W-.37S54.
+ 
+(3 Point BossYou input what degrees you want it to probe at)(D = Diamter of boss / U = 0 degrees / V = 120 Degrees / F = 240 Degrees)
+ 
+G65P9901M13.D15.0U0.V120.F240.W-.5S54. 
+ 
+ 
+(External Rectangle)(D = X Distance / E = Y Distance / W = Probe Depth Below Z Height) 
+ 
+G65P9901M11.D30.4E27.4W-.32S54.
+ 
+(Internal Retangle)(D = X Distance / E = Y Distance) 
+ 
+G65P9901M10.D13.75E20.625S55.
+ 
+ 
+(Measure Pocket In X)
+ 
+(D = X Distance)(Set To G56 / Parameter #100)
+G65P9901M4.A1.D19.S56. 
+ 
+(Measure Pocket In Y)(D = Y Distance)(Set To G56 / Parameter #100) 
+G65P9901M4.A2.D19.S56. 
+ 
+ 
+ 
+ 
+ 
+ 
+%

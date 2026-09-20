@@ -1,0 +1,55 @@
+%
+<Tool_GO_PROBE>(TOOL Single Tool SETTING)
+ 
+(SETTING TOOL LENGTH ON CENTER)
+(T=TOOL TO SET)
+(K=APPROX TOOL LENGTH) 
+(Length Only)
+ 
+(T4M6) 
+(G111T4K2.5) 
+ 
+T4M6 
+G111T4K10.6
+ 
+M30
+ 
+ 
+ 
+ 
+(T=TOOL TO SET)
+(K=APPROX TOOL LENGTH) 
+(R=TOOL DIA.)
+(Length to spin backwords, bigger then .393 dia, moves off center) 
+ 
+(T4M6) 
+(G111T4R.5K2.5)
+ 
+ 
+T5M6 
+G111T5R.75K5.7 
+ 
+ 
+M30
+ 
+ 
+ 
+ 
+ 
+(SETTING TOOL LENGTH OFFSET and DIAMETER SPINNING) 
+(T=TOOL TO SET)
+(K=APPROX TOOL LENGTH) 
+(R=TOOL DIA.)
+(D=DIA. TO SET)
+(+R=RIGHT-HAND TOOLS -R=LEFT-HAND TOOLS) 
+ 
+ 
+(T4M6) 
+(G111T4.D4.R.5K2.5)
+ 
+ 
+ 
+ 
+ 
+M30
+%
