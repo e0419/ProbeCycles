@@ -1,0 +1,4 @@
+*.nc linguist-language=G-code
+*.NC linguist-language=G-code
+*.kit linguist-language=G-code
+*.KIT linguist-language=G-code
