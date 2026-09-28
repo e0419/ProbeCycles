@@ -1,0 +1,382 @@
+O9011 (GRID PROBE - FIND HIGH POINT)
+
+( CALL EXAMPLE )
+( G65 P9011 X20. Y12. S54. Q1.0 )
+( )
+( X = RECTANGLE SIZE IN X+ )
+( Y = RECTANGLE SIZE IN Y- )
+( S = WCS NUMBER - DEFAULT 54 )
+( Q = Z SEARCH BELOW START - DEFAULT 1.000 )
+( )
+( START APPROX .500 ABOVE X- Y+ CORNER )
+( MAXIMUM GRID SPACING = 4.000 )
+( #137 = RENISHAW MEASURED Z POSITION )
+( #600 = TOTAL MEASURED FLATNESS )
+
+(SET PARAM 6051 TO 541)
+(CALL WITH G541 X# Y# [S# Q#])
+
+(------------------------------)
+( CHECK INPUTS )
+(------------------------------)
+
+IF[#24 EQ #0]THEN#3000=1(X SIZE REQUIRED)
+IF[#25 EQ #0]THEN#3000=2(Y SIZE REQUIRED)
+
+IF[#24 LE 0]THEN#3000=3(X SIZE INVALID)
+IF[#25 LE 0]THEN#3000=4(Y SIZE INVALID)
+
+
+( DEFAULT WCS = G54 )
+
+IF[#19 EQ #0]THEN#19=54
+
+IF[#19 LT 54]THEN#3000=5(WCS INVALID)
+IF[#19 GT 59]THEN#3000=5(WCS INVALID)
+
+
+( DEFAULT Z SEARCH = 1.000 )
+
+IF[#17 EQ #0]THEN#17=1.
+
+IF[#17 LE 0]THEN#3000=6(Q DEPTH INVALID)
+
+
+(------------------------------)
+( COPY ARGUMENTS )
+(------------------------------)
+
+#620=#24    (X SIZE)
+#621=#25    (Y SIZE)
+#622=#19    (WCS NUMBER)
+#623=#17    (Z SEARCH DEPTH)
+
+
+(------------------------------)
+( GET CURRENT TOOL )
+(------------------------------)
+
+#619=#4120    (CURRENT TOOL NUMBER)
+
+IF[#619 LE 0]THEN#3000=7(NO ACTIVE TOOL)
+
+
+(------------------------------)
+( ACTIVATE WCS AND LENGTH )
+(------------------------------)
+
+G90 G20 G80
+G#622
+
+G43 H#619
+
+
+
+(------------------------------)
+( SAVE STARTING POSITION )
+(------------------------------)
+
+#601=#5041    (START X)
+#602=#5042    (START Y)
+#603=[#5043-#[11000+#619]]   (SAFE Z)
+
+#613=#603-#623    (Z SEARCH TARGET)
+
+
+(------------------------------)
+( CALCULATE GRID )
+(------------------------------)
+
+( X INTERVAL COUNT )
+
+#604=FIX[#620/4.]
+
+IF[[#620-[#604*4.]]GT.0001]THEN#604=#604+1
+IF[#604 LT 1]THEN#604=1
+
+
+( Y INTERVAL COUNT )
+
+#605=FIX[#621/4.]
+
+IF[[#621-[#605*4.]]GT.0001]THEN#605=#605+1
+IF[#605 LT 1]THEN#605=1
+
+
+( ACTUAL GRID SPACING )
+
+#606=#620/#604
+#607=#621/#605
+
+
+(------------------------------)
+( INITIALIZE RESULTS )
+(------------------------------)
+
+#608=0          (CURRENT Y ROW)
+#609=0          (CURRENT X COLUMN)
+
+#610=-99999.    (HIGHEST Z)
+#618=99999.     (LOWEST Z)
+
+#611=#601       (HIGH POINT X)
+#612=#602       (HIGH POINT Y)
+
+
+(------------------------------)
+( PROBE ON )
+(------------------------------)
+
+G65 P9832
+
+
+(------------------------------)
+( TRACE RECTANGLE PERIMETER )
+(------------------------------)
+
+( X- Y+ TO X+ Y+ )
+
+G65 P9810 X[#601+#620] Y#602
+
+
+( X+ Y+ TO X+ Y- )
+
+G65 P9810 X[#601+#620] Y[#602-#621]
+
+
+( X+ Y- TO X- Y- )
+
+G65 P9810 X#601 Y[#602-#621]
+
+
+( X- Y- TO X- Y+ )
+( FINISH AT FIRST PROBE POINT )
+
+G65 P9810 X#601 Y#602
+
+
+(------------------------------)
+( PROBE CURRENT GRID POINT )
+(------------------------------)
+
+N100
+
+G65 P9811 Z#613
+
+
+(------------------------------)
+( CHECK MEASURED Z )
+(------------------------------)
+
+( CHECK FOR NEW HIGH POINT )
+
+IF[#137 LE #610]GOTO110
+
+#610=#137
+
+#611=#601+[#609*#606]
+#612=#602-[#608*#607]
+
+
+N110
+
+( CHECK FOR NEW LOW POINT )
+
+IF[#137 GE #618]GOTO120
+
+#618=#137
+
+
+N120
+
+(------------------------------)
+( RETRACT TO SAFE Z )
+(------------------------------)
+
+G65 P9810 Z#603
+
+
+(------------------------------)
+( DETERMINE NEXT POINT )
+(------------------------------)
+
+( EVEN ROWS TRAVEL X+ )
+( ODD ROWS TRAVEL X- )
+
+#614=FIX[#608/2.]*2
+
+
+(------------------------------)
+( EVEN ROW - X+ )
+(------------------------------)
+
+IF[#614 NE #608]GOTO200
+
+
+#609=#609+1
+
+( END OF ROW? )
+
+IF[#609 GT #604]GOTO150
+
+
+( MOVE TO NEXT X POINT )
+
+#615=#601+[#609*#606]
+
+G65 P9810 X#615
+
+GOTO100
+
+
+(------------------------------)
+( MOVE TO NEXT Y ROW )
+( FROM X+ END )
+(------------------------------)
+
+N150
+
+#608=#608+1
+
+( ALL ROWS COMPLETE? )
+
+IF[#608 GT #605]GOTO300
+
+
+( KEEP COLUMN AT X+ END )
+
+#609=#604
+
+
+( NEXT Y POSITION )
+
+#615=#602-[#608*#607]
+
+G65 P9810 Y#615
+
+GOTO100
+
+
+(------------------------------)
+( ODD ROW - X- )
+(------------------------------)
+
+N200
+
+#609=#609-1
+
+( END OF ROW? )
+
+IF[#609 LT 0]GOTO250
+
+
+( MOVE TO NEXT X POINT )
+
+#615=#601+[#609*#606]
+
+G65 P9810 X#615
+
+GOTO100
+
+
+(------------------------------)
+( MOVE TO NEXT Y ROW )
+( FROM X- END )
+(------------------------------)
+
+N250
+
+#608=#608+1
+
+( ALL ROWS COMPLETE? )
+
+IF[#608 GT #605]GOTO300
+
+
+( KEEP COLUMN AT X- END )
+
+#609=0
+
+
+( NEXT Y POSITION )
+
+#615=#602-[#608*#607]
+
+G65 P9810 Y#615
+
+GOTO100
+
+
+(------------------------------)
+( GRID COMPLETE )
+(------------------------------)
+
+N300
+
+
+(------------------------------)
+( CALCULATE TOTAL FLATNESS )
+(------------------------------)
+
+#600=#610-#618
+
+
+(------------------------------)
+( MOVE ABOVE HIGHEST POINT )
+(------------------------------)
+
+( CURRENT POSITION IS ALREADY SAFE Z )
+
+G65 P9810 X#611 Y#612
+
+
+(------------------------------)
+( UPDATE WORK OFFSET Z )
+(------------------------------)
+
+( G54=P1 THROUGH G59=P6 )
+
+#616=#622-53
+
+
+( WCS Z VARIABLE ADDRESS )
+( G54 Z = #5223 )
+( G55 Z = #5243 )
+( G56 Z = #5263 )
+( G57 Z = #5283 )
+( G58 Z = #5303 )
+( G59 Z = #5323 )
+
+#617=5223+[[#616-1]*20]
+
+
+( HIGH POINT BECOMES Z0 )
+
+#619=#[#617]+#610
+
+
+( WRITE UPDATED WCS )
+
+G10 L2 P#616 Z#619
+
+
+( REACTIVATE UPDATED WCS )
+
+G#622
+
+
+(------------------------------)
+( PROBE OFF )
+(------------------------------)
+
+G65 P9833
+
+
+(------------------------------)
+( RESULT )
+(------------------------------)
+
+#3006=1(FLATNESS STORED IN VAR 600)
+
+M99
+%
